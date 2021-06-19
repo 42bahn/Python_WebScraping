@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 url = "https://finance.naver.com/sise/sise_market_sum.nhn?&page="
 
-filename = "시가총액1-200.csv"
+filename = "stock\시가총액1-200.csv"
 f = open(filename, "w", encoding="utf-8-sig", newline="")
 writer = csv.writer(f)
 
@@ -22,5 +22,5 @@ for page in range(1, 5):
         if len(columns) <= 1:
             continue
         data = [column.get_text().strip() for column in columns]
-        # print(data)
+        print(data)
         writer.writerow(data)
