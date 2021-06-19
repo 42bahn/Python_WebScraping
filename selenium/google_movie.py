@@ -5,7 +5,11 @@ import time
 
 url = "https://play.google.com/store/movies/top"
 
-browser = webdriver.Chrome("selenium\chromedriver.exe")
+options = webdriver.ChromeOptions()
+options.headless = True
+options.add_argument("window-size=1920x1080")
+options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36")
+browser = webdriver.Chrome(executable_path="selenium\chromedriver.exe", options=options)
 browser.maximize_window()
 browser.get(url)
 
@@ -17,6 +21,7 @@ while True:
     current_height = browser.execute_script("return document.body.scrollHeight")
     if prev_height == current_height:
         print("스크롤 완료")
+        browser.get_screenshot_as_file("selenium/google_movie.png")
         break
     prev_height = current_height
 
