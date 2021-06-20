@@ -1,7 +1,7 @@
 # Python
 
 ## [1.  re](./test/re.md)
-## [2.  request](./test/request.md)
+## [2.  requests](./test/requests.md)
 ## [3.  BeautifulSoup4](./test/BeautifulSoup4.md)
 * ### [Webtoon](./webtoon/webtoon.md) / [Product](./product/product.md)
 ## [4.  CSV](./csv)

@@ -1,6 +1,6 @@
-# re 모듈 - 정규표현식
+# re Module - 정규 표현식 (Regular expression)
 
-파이썬은 정규 표현식을 지원하기 위해 re(regular expression의 약어) 모듈을 제공한다.
+파이썬은 정규 표현식을 지원하기 위해 re(regex의 약어) 모듈을 제공한다.
 
 re 모듈은 파이썬을 설치할 때 자동으로 설치되는 기본 라이브러리이다.
 
