@@ -1,16 +1,20 @@
 # Python
 
-## [1.  re](./test/re.md)
-## [2.  requests](./test/requests.md)
-## [3.  BeautifulSoup4](./test/BeautifulSoup4.md)
-* ### [Webtoon](./webtoon) / [Product](./product)
-## [4.  CSV](./csv/csv.md)
-* ### [Stock](./csv)
+## [1.  re](./re)
 
-## [5.  Selenium](./selenium/selenium.md)
-* ### [Naver Login](./selenium/naver_login.md) / [youtube](./selenium/youtube.md) / [flight](./selenium/flight.md) / [Google Movie](./selenium/google_movie.md)
-## [6.  Challenge](./challenge)
-* ### [estate](./challenge/selenium.md)
+## [2.  requests](./requests)
+
+## [3.  BeautifulSoup4](./BeautifulSoup4)
+* ### [Webtoon](./Webtoon) / [Product](./Product)
+
+## [4.  CSV](./CSV)
+* ### [Stock](./CSV/csv_stock.py)
+
+## [5.  Selenium](./selenium)
+* ### [Naver Login](./selenium/naver_login.py) / [Youtube](./selenium/brave_girls_youtube.py) / [Flight Reservation](./selenium/flight_reservation.py) / [Google Movie](./selenium/google_movie.py)
+
+## [6.  Challenge](./Challenge)
+* ### [estate](./Challenge/estate.py)
 
 ## Module & Package
 
