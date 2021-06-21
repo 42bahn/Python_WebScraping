@@ -7,14 +7,14 @@
 ## [3.  BeautifulSoup4](./BeautifulSoup4)
 * ### [Webtoon](./Webtoon) / [Product](./Product)
 
-## [4.  CSV](./CSV)
-* ### [Stock](./CSV/csv_stock.py)
+## [4.  CSV](./csv)
+* ### [Stock](./csv/csv_stock.py)
 
 ## [5.  Selenium](./selenium)
 * ### [Naver Login](./selenium/naver_login.py) / [Youtube](./selenium/brave_girls_youtube.py) / [Flight Reservation](./selenium/flight_reservation.py) / [Google Movie](./selenium/google_movie.py)
 
-## [6.  Challenge](./Challenge)
-* ### [estate](./Challenge/estate.py)
+## [6.  Challenge](./challenge)
+* ### [estate](./challenge/estate.py)
 
 ## Module & Package
 
