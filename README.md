@@ -3,9 +3,9 @@
 ## [1.  re](./test/re.md)
 ## [2.  requests](./test/requests.md)
 ## [3.  BeautifulSoup4](./test/BeautifulSoup4.md)
-* ### [Webtoon](./webtoon/webtoon.md) / [Product](./product/product.md)
-## [4.  CSV](./csv)
-* ### [Stock](./csv/stock.md)
+* ### [Webtoon](./webtoon) / [Product](./product)
+## [4.  CSV](./csv/csv.md)
+* ### [Stock](./csv)
 
 ## [5.  Selenium](./selenium/selenium.md)
 * ### [Naver Login](./selenium/naver_login.md) / [youtube](./selenium/youtube.md) / [flight](./selenium/flight.md) / [Google Movie](./selenium/google_movie.md)

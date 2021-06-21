@@ -26,7 +26,7 @@ rank3 = rank2.find_next_sibling("li")
 print("3위", rank3.a.get_text())
 
 # print(rank3.previous_sibling.previous_sibling.a.get_text())
-# print(rank3.fine_previous_sibling("li"))
+# print(rank3.find_previous_sibling("li"))
 
 # print(rank3.parent)
 
