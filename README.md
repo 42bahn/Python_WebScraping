@@ -5,7 +5,7 @@
 ## [2.  requests](./requests)
 
 ## [3.  BeautifulSoup4](./BeautifulSoup4)
-* ### [Webtoon](./Webtoon) / [Product](./Product)
+* ### [Webtoon](./webtoon) / [Product](./product)
 
 ## [4.  CSV](./csv)
 * ### [Stock](./csv/csv_stock.py)
