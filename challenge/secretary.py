@@ -8,6 +8,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from bs4 import BeautifulSoup
 
+def remove_tag(tags):
+    for tag in tags:
+        tag.decompose()
+
 url = "https://www.naver.com/"
 
 options = webdriver.ChromeOptions()
@@ -25,9 +29,10 @@ try:
 finally:
     soup = BeautifulSoup(driver.page_source, "lxml")
     
-    blinds = soup.find_all("span", attrs={"class":"blind"})
-    for blind in blinds:
-        blind.decompose()
+    remove_tag(soup.find_all("span", attrs={"class":"blind"}))
+    # blinds = soup.find_all("span", attrs={"class":"blind"})
+    # for blind in blinds:
+    #     blind.decompose()
     
     today = soup.find("div", attrs={"class":"main_info"})
     current = today.find("span", attrs={"class":"todaytemp"}).get_text() + today.find("span", attrs={"class":"tempmark"}).get_text()
@@ -45,14 +50,10 @@ finally:
     for dust in dust_info.find_all("dt"):
         value = dust.find_next_sibling("dd").get_text()
         print(f"{dust.get_text()} : {value}")
-
-
-
 #############################################################
 
 
 ######################헤드라인 뉴스 추출######################
-
 driver.get(url)
 driver.find_element_by_xpath('//*[@id="NM_FAVORITE"]/div[1]/ul[2]/li[2]').click()
 
@@ -64,4 +65,35 @@ for index, list in enumerate(lists):
     if index == 3:
         break
     title = list.find_element_by_class_name("hdline_article_tit a")
-    print(f"{title.text} (링크 : {title.get_attribute('href')})")
+    print(f"{title.text} (링크 : {title.get_attribute('href')})\n")
+#############################################################
+
+
+#######################IT 뉴스 추출###########################
+# driver.get(url)
+# driver.find_element_by_xpath('//*[@id="NM_FAVORITE"]/div[1]/ul[2]/li[2]').click()
+
+driver.find_element_by_xpath('//*[@id="lnb"]/ul/li[8]/a').click()
+try:
+    WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.CLASS_NAME, "container")))
+finally:
+    soup = BeautifulSoup(driver.page_source, "lxml")
+    print("\n[" + driver.find_element_by_xpath('//*[@id="snb"]/h2/a').text + " 헤드라인 뉴스]")
+    driver.find_element_by_class_name("cluster_more").click()
+
+head_line = driver.find_elements_by_class_name("cluster_head_topic a")
+for line in head_line:
+    print(line.text)
+    print(f"링크 : {line.get_attribute('href')}\n")
+
+###########해커스 영어 사이트 오늘의 회화 데이터 추출###########
+driver.get("https://www.hackers.co.kr/")
+try:
+    ad = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.ID, "main_breand")))
+finally:
+    print("SUCCESS")
+    driver.find_element_by_id("main_breand_checkbox_close2").click()
+
+driver.find_element_by_class_name("mn01").click()
+
+driver.find_element_by_link_text("영어회화강의  ").click()
