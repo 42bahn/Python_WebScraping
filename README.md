@@ -14,7 +14,10 @@
 * ### [Naver Login](./selenium/naver_login.py) / [Youtube](./selenium/brave_girls_youtube.py) / [Flight Reservation](./selenium/flight_reservation.py) / [Google Movie](./selenium/google_movie.py)
 
 ## [6.  Challenge](./challenge)
-* ### [estate](./challenge/estate.py)
+* ### [estate](./challenge/estate.py) / [secretary](./challenge/secretary.py)
+
+[Selenium with Python](https://selenium-python.readthedocs.io/)
+[https://www.selenium.dev/documentation/ko/](https://www.selenium.dev/documentation/ko/)
 
 ## Module & Package
 

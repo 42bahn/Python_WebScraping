@@ -1,9 +1,9 @@
 from selenium import webdriver
 
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.keys import Keys # 키보드 입력에 대한 이벤트 처리
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By 
+from selenium.webdriver.support.ui import WebDriverWait # WebDriver를 최대 10초까지 기다리는 객체
 from selenium.webdriver.support import expected_conditions as EC
 
 from bs4 import BeautifulSoup
@@ -13,16 +13,16 @@ def remove_tag(tags):
     for tag in tags:
         tag.decompose()
 
+options = webdriver.ChromeOptions()
+options.headless = True # 웹 브라우저를 띄우지 않음
+options.add_argument("window-size=1440,960")
+options.add_experimental_option('excludeSwitches', ['enable-logging']) # WebDriver 로드 시 터미널에 출력되는 로그 기록을 끔
+driver = webdriver.Chrome(executable_path="chromedriver.exe", options=options)
+
 url = "https://www.naver.com/"
 
-options = webdriver.ChromeOptions()
-options.headless = True
-options.add_argument("window-size=1440,960")
-options.add_experimental_option('excludeSwitches', ['enable-logging'])
-driver = webdriver.Chrome(executable_path="chromedriver.exe", options=options)
-driver.get(url)
-
 ##################### Naver 날씨 정보 조회 ##########################
+driver.get(url)
 search = driver.find_element_by_id("query")
 search.send_keys("날씨")
 search.send_keys(Keys.ENTER)
@@ -54,7 +54,7 @@ finally:
 
 ######################헤드라인 종합/IT 뉴스 추출######################
 driver.get(url)
-driver.find_element_by_xpath('//*[@id="NM_FAVORITE"]/div[1]/ul[2]/li[2]').click()
+driver.find_element_by_xpath('//*[@id="NM_FAVORITE"]/div[1]/ul[2]/li[2]/a').click()
 
 head_line = driver.find_element_by_id("today_main_news")
 print(f"\n[{driver.find_element_by_class_name('tit_main1').text}]")
@@ -66,8 +66,7 @@ for index, list in enumerate(lists):
     title = list.find_element_by_class_name("hdline_article_tit a")
     print(f"{title.text} (링크 : {title.get_attribute('href')})\n")
 
-##########################IT 뉴스 추출###############################
-
+# IT 뉴스 추출
 driver.find_element_by_xpath('//*[@id="lnb"]/ul/li[8]/a').click()
 try:
     WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.CLASS_NAME, "container")))
@@ -86,25 +85,22 @@ for line in head_line:
 driver.get("https://www.hackers.co.kr/")
 try:
     ad = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.ID, "main_breand")))
-    
 finally:
-    # print("SUCCESS")
     ad.find_element_by_id("main_breand_checkbox_close2").click()
 
 try:
     header = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.ID, "header")))
 finally:
-    # print("SUCCESS")
     link = header.find_element_by_class_name("mn01 a").get_attribute('href')
     driver.get(link)
     driver.find_element_by_xpath('//*[@id="container"]/div[2]/div/div[1]/div[1]/div[2]/pre/dl[1]/dd/ul/li[8]/a').click()
     
-    print("[오늘의 회화]")
-    convs = driver.find_elements_by_class_name("conv_in")
-    for index, conv in enumerate(convs):
-        if index == 0:
-            print("[한글 지문]")
-        else:
-            print("[영어 지문]")
-        print(f"{conv.text}\n")
+print("[오늘의 회화]")
+convs = driver.find_elements_by_class_name("conv_in")
+for index, conv in enumerate(convs):
+    if index == 0:
+        print("[한글 지문]")
+    else:
+        print("[영어 지문]")
+    print(f"{conv.text}\n")
 ####################################################################
