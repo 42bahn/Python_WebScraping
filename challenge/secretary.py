@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from bs4 import BeautifulSoup
 
+# bs4를 통해 추출한 태그를 인자로 넘겨주어 해당 태그를 지워주는 함수
 def remove_tag(tags):
     for tag in tags:
         tag.decompose()
@@ -15,11 +16,13 @@ def remove_tag(tags):
 url = "https://www.naver.com/"
 
 options = webdriver.ChromeOptions()
+options.headless = True
 options.add_argument("window-size=1440,960")
+options.add_experimental_option('excludeSwitches', ['enable-logging'])
 driver = webdriver.Chrome(executable_path="chromedriver.exe", options=options)
 driver.get(url)
 
-#################### Naver 날씨 정보 조회 ####################
+##################### Naver 날씨 정보 조회 ##########################
 search = driver.find_element_by_id("query")
 search.send_keys("날씨")
 search.send_keys(Keys.ENTER)
@@ -28,11 +31,7 @@ try:
     section = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.CLASS_NAME, "cs_weather")))
 finally:
     soup = BeautifulSoup(driver.page_source, "lxml")
-    
     remove_tag(soup.find_all("span", attrs={"class":"blind"}))
-    # blinds = soup.find_all("span", attrs={"class":"blind"})
-    # for blind in blinds:
-    #     blind.decompose()
     
     today = soup.find("div", attrs={"class":"main_info"})
     current = today.find("span", attrs={"class":"todaytemp"}).get_text() + today.find("span", attrs={"class":"tempmark"}).get_text()
@@ -50,10 +49,10 @@ finally:
     for dust in dust_info.find_all("dt"):
         value = dust.find_next_sibling("dd").get_text()
         print(f"{dust.get_text()} : {value}")
-#############################################################
+####################################################################
 
 
-######################헤드라인 뉴스 추출######################
+######################헤드라인 종합/IT 뉴스 추출######################
 driver.get(url)
 driver.find_element_by_xpath('//*[@id="NM_FAVORITE"]/div[1]/ul[2]/li[2]').click()
 
@@ -61,17 +60,13 @@ head_line = driver.find_element_by_id("today_main_news")
 print(f"\n[{driver.find_element_by_class_name('tit_main1').text}]")
 
 lists = driver.find_elements_by_class_name("hdline_article_list li")
-for index, list in enumerate(lists):
+for index, list in enumerate(lists): 
     if index == 3:
         break
     title = list.find_element_by_class_name("hdline_article_tit a")
     print(f"{title.text} (링크 : {title.get_attribute('href')})\n")
-#############################################################
 
-
-#######################IT 뉴스 추출###########################
-# driver.get(url)
-# driver.find_element_by_xpath('//*[@id="NM_FAVORITE"]/div[1]/ul[2]/li[2]').click()
+##########################IT 뉴스 추출###############################
 
 driver.find_element_by_xpath('//*[@id="lnb"]/ul/li[8]/a').click()
 try:
@@ -85,15 +80,31 @@ head_line = driver.find_elements_by_class_name("cluster_head_topic a")
 for line in head_line:
     print(line.text)
     print(f"링크 : {line.get_attribute('href')}\n")
+####################################################################
 
-###########해커스 영어 사이트 오늘의 회화 데이터 추출###########
+###############해커스 영어 사이트 오늘의 회화 데이터 추출##############
 driver.get("https://www.hackers.co.kr/")
 try:
     ad = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.ID, "main_breand")))
+    
 finally:
-    print("SUCCESS")
-    driver.find_element_by_id("main_breand_checkbox_close2").click()
+    # print("SUCCESS")
+    ad.find_element_by_id("main_breand_checkbox_close2").click()
 
-driver.find_element_by_class_name("mn01").click()
-
-driver.find_element_by_link_text("영어회화강의  ").click()
+try:
+    header = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.ID, "header")))
+finally:
+    # print("SUCCESS")
+    link = header.find_element_by_class_name("mn01 a").get_attribute('href')
+    driver.get(link)
+    driver.find_element_by_xpath('//*[@id="container"]/div[2]/div/div[1]/div[1]/div[2]/pre/dl[1]/dd/ul/li[8]/a').click()
+    
+    print("[오늘의 회화]")
+    convs = driver.find_elements_by_class_name("conv_in")
+    for index, conv in enumerate(convs):
+        if index == 0:
+            print("[한글 지문]")
+        else:
+            print("[영어 지문]")
+        print(f"{conv.text}\n")
+####################################################################
