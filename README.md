@@ -16,8 +16,9 @@
 ## [6.  Challenge](./challenge)
 * ### [estate](./challenge/estate.py) / [secretary](./challenge/secretary.py)
 
-[Selenium with Python](https://selenium-python.readthedocs.io/)
-[https://www.selenium.dev/documentation/ko/](https://www.selenium.dev/documentation/ko/)
+## 참고자료
+* # [Selenium with Python](https://selenium-python.readthedocs.io/)
+* # [https://www.selenium.dev/documentation/ko/](https://www.selenium.dev/documentation/ko/)
 
 ## Module & Package
 
@@ -27,7 +28,6 @@
     이러한 모듈을 여러 개 모아놓은 것을 패키지라 한다.
 
     ex)
-
     import 모듈이름 [as 별칭]
     import re
     import requests as req
