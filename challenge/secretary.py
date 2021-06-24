@@ -1,36 +1,52 @@
+import re
+import requests
+from bs4 import BeautifulSoup
+
 from selenium import webdriver
-
-from selenium.webdriver.common.keys import Keys # 키보드 입력에 대한 이벤트 처리
-
-from selenium.webdriver.common.by import By 
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait # WebDriver를 최대 10초까지 기다리는 객체
 from selenium.webdriver.support import expected_conditions as EC
 
-from bs4 import BeautifulSoup
+def init_webdriver(url):
+    options = webdriver.ChromeOptions()
+    options.headless = True # True == 웹 브라우저를 띄우지 않음 / False == 웹 브라우저를 띄움
+    options.add_argument("window-size=1440,960") # 웹
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36")
+    options.add_experimental_option('excludeSwitches', ['enable-logging']) # WebDriver 로드 시 터미널에 출력되는 로그 기록을 끔
+    driver = webdriver.Chrome(executable_path="chromedriver.exe", options=options)
+    driver.get(url)
+    return (driver)
 
-# bs4를 통해 추출한 태그를 인자로 넘겨주어 해당 태그를 지워주는 함수
-def remove_tag(tags):
+def init_soup(url):
+    headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"}
+    res = requests.get(url, headers=headers)
+    res.raise_for_status()
+    soup = BeautifulSoup(res.text, "lxml")
+    return (soup)
+
+def remove_tag(tags):   # bs4를 통해 추출한 태그를 인자로 넘겨주어 해당 태그를 지워주는 함수
     for tag in tags:
         tag.decompose()
 
-options = webdriver.ChromeOptions()
-options.headless = True # 웹 브라우저를 띄우지 않음
-options.add_argument("window-size=1440,960")
-options.add_experimental_option('excludeSwitches', ['enable-logging']) # WebDriver 로드 시 터미널에 출력되는 로그 기록을 끔
-driver = webdriver.Chrome(executable_path="chromedriver.exe", options=options)
-
-url = "https://www.naver.com/"
-
 ##################### Naver 날씨 정보 조회 ##########################
-driver.get(url)
-search = driver.find_element_by_id("query")
-search.send_keys("날씨")
-search.send_keys(Keys.ENTER)
+def naver_weather():
+    url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=%EB%82%A0%EC%94%A8"
+    
+    ## Based on Selenium 
+    # driver = init_webdriver()
+    # driver.get(url)
+    # try:
+    #     WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.CLASS_NAME, "cs_weather")))
+    # finally:
+    #     soup = BeautifulSoup(driver.page_source, "lxml")
+    ## end
+    
+    # Based on requests, bs4
+    res = requests.get(url)
+    res.raise_for_status()
+    soup = BeautifulSoup(res.text, "lxml")
+    # end
 
-try:
-    section = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.CLASS_NAME, "cs_weather")))
-finally:
-    soup = BeautifulSoup(driver.page_source, "lxml")
     remove_tag(soup.find_all("span", attrs={"class":"blind"}))
     
     today = soup.find("div", attrs={"class":"main_info"})
@@ -49,58 +65,102 @@ finally:
     for dust in dust_info.find_all("dt"):
         value = dust.find_next_sibling("dd").get_text()
         print(f"{dust.get_text()} : {value}")
+    print()
 ####################################################################
 
 
-######################헤드라인 종합/IT 뉴스 추출######################
-driver.get(url)
-driver.find_element_by_xpath('//*[@id="NM_FAVORITE"]/div[1]/ul[2]/li[2]/a').click()
+################# Naver 종합 헤드라인 뉴스 추출 ####################
+def naver_total_news():
+    url = "https://news.naver.com/"
+    
+    ## Based on Selenium 
+    # driver = init_webdriver()
+    # driver.get(url)
 
-head_line = driver.find_element_by_id("today_main_news")
-print(f"\n[{driver.find_element_by_class_name('tit_main1').text}]")
+    # print(f"\n[{driver.find_element_by_class_name('tit_main1').text}]")
+    # lists = driver.find_elements_by_class_name("hdline_article_list li")
+    # for index, list in enumerate(lists): 
+    #     if index == 3:
+    #         break
+    #     title = list.find_element_by_class_name("hdline_article_tit a")
+    #     print(f"{title.text} (링크 : {title.get_attribute('href')})\n")
+    ## end
 
-lists = driver.find_elements_by_class_name("hdline_article_list li")
-for index, list in enumerate(lists): 
-    if index == 3:
-        break
-    title = list.find_element_by_class_name("hdline_article_tit a")
-    print(f"{title.text} (링크 : {title.get_attribute('href')})\n")
+    ## Based on requests, bs4
+    soup = init_soup(url)
+    
+    print("[Naver 종합 헤드라인 뉴스]")
+    lists = soup.find(class_="hdline_article_list").find_all("li") # class는 Python에서 예약어로 지정되어있기 때문에 class_(CSS 클래스) 키워드를 사용해야한다.
+    for list in lists:
+        head = list.find("div", attrs={"class":"hdline_article_tit"}).a
+        title = head.get_text().strip()
+        link = url + head['href']
+        print(f"{title}\n(링크 : {link})\n")
+    ## end
+    print()
+################### Naver IT 헤드라인 뉴스 추출#####################
+def naver_IT_news():
+    url = "https://news.naver.com"
+    
+    ## Based on Selenium 
+    # driver = init_webdriver()
+    # driver.get(url)
+    # try:
+    #     WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.CLASS_NAME, "container")))
+    # finally:
+    #     print("\n[" + driver.find_element_by_xpath('//*[@id="snb"]/h2/a').text + " 헤드라인 뉴스]")
+    #     driver.find_element_by_class_name("cluster_more").click()
 
-# IT 뉴스 추출
-driver.find_element_by_xpath('//*[@id="lnb"]/ul/li[8]/a').click()
-try:
-    WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.CLASS_NAME, "container")))
-finally:
-    soup = BeautifulSoup(driver.page_source, "lxml")
-    print("\n[" + driver.find_element_by_xpath('//*[@id="snb"]/h2/a').text + " 헤드라인 뉴스]")
-    driver.find_element_by_class_name("cluster_more").click()
+    # head_line = driver.find_elements_by_class_name("cluster_head_topic a")
+    # for line in head_line:
+    #     print(line.text)
+    #     print(f"링크 : {line.get_attribute('href')}\n")
+    ## end
 
-head_line = driver.find_elements_by_class_name("cluster_head_topic a")
-for line in head_line:
-    print(line.text)
-    print(f"링크 : {line.get_attribute('href')}\n")
+    print("[Naver IT 헤드라인 뉴스]")
+    # Based on requests, bs4
+    soup = init_soup(url + "/main/main.nhn?mode=LSD&mid=shm&sid1=105")
+    lists = soup.find("div", attrs={"class":"_persist"}).find_all("h2", attrs={"class":"cluster_head_topic"})
+    for list in lists:
+        title = list.a.get_text().strip()
+        link = url + list.a['href']
+        print(f"{title}\n(링크 : {link})\n")
+    # end
+    print()
 ####################################################################
 
 ###############해커스 영어 사이트 오늘의 회화 데이터 추출##############
-driver.get("https://www.hackers.co.kr/")
-try:
-    ad = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.ID, "main_breand")))
-finally:
-    ad.find_element_by_id("main_breand_checkbox_close2").click()
-
-try:
-    header = WebDriverWait(driver=driver, timeout=10).until(EC.presence_of_element_located((By.ID, "header")))
-finally:
-    link = header.find_element_by_class_name("mn01 a").get_attribute('href')
-    driver.get(link)
-    driver.find_element_by_xpath('//*[@id="container"]/div[2]/div/div[1]/div[1]/div[2]/pre/dl[1]/dd/ul/li[8]/a').click()
-    
-print("[오늘의 회화]")
-convs = driver.find_elements_by_class_name("conv_in")
-for index, conv in enumerate(convs):
-    if index == 0:
-        print("[한글 지문]")
-    else:
-        print("[영어 지문]")
-    print(f"{conv.text}\n")
+def hackers_convers():
+    url = "https://www.hackers.co.kr/?c=s_eng/eng_contents/I_others_english&keywd=haceng_submain_gnb_eng_I_others_english&logger_kw=haceng_submain_gnb_eng_I_others_english"
+    # # Based on Selenium
+    # driver = init_webdriver(url)
+        
+    # print("[오늘의 회화]\n")
+    # convs = driver.find_elements_by_class_name("conv_in")
+    # for index, conv in enumerate(convs):
+    #     if index == 0:
+    #         print("한글 지문]")
+    #     else:
+    #         print("[영어 지문]")
+    #     print(f"{conv.text}\n")
+    # # end
+    soup = init_soup(url)
+    print("[오늘의 회화]\n")
+    passages = soup.find_all("div", attrs={"class":"conv_txt"})
+    for index, passage in enumerate(passages):
+        if index == 0:
+            print(">>>한글 지문")
+        else:
+            print(">>>영어 지문")
+        sentences = passage.find_all("div", attrs={"id":re.compile("^conv_kor_t")})
+        for sentence in sentences:
+            print(sentence.get_text().strip())
+        print()
 ####################################################################
+
+# Python main
+if __name__ == "__main__":
+    naver_weather()
+    naver_total_news()
+    naver_IT_news()
+    hackers_convers()
