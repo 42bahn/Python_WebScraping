@@ -145,7 +145,7 @@ def hackers_convers():
     #     print(f"{conv.text}\n")
     # # end
     soup = init_soup(url)
-    print("[오늘의 회화]\n")
+    print("[오늘의 회화]")
     passages = soup.find_all("div", attrs={"class":"conv_txt"})
     for index, passage in enumerate(passages):
         if index == 0:
